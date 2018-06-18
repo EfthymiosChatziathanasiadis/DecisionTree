@@ -1,5 +1,10 @@
-// ECS629/759 Assignment 2 - ID3 Skeleton Code
-// Author: Simon Dixon
+/**
+ * PROF: SIMON DIXON
+ * AUTHOR: EFTHYMIOS CHATZIATHANASIADIS
+ * STUDENT ID: 150359131
+ * ECS629 ARTIFICIAL INTELLIGENCE
+ * Assignment 2 - ID3
+ **/
 
 import java.io.File;
 import java.io.FileReader;
@@ -9,12 +14,6 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.ArrayList;
 
-/*
-* AUTHOR: EFTHYMIOS CHATZIATHANASIADIS
-* STUDENT ID: 150359131
-* ECS629 ARTIFICIAL INTELLIGENCE
-* Assignment 2 - ID3
-*/
 
 class ID3 {
 
@@ -109,12 +108,12 @@ class ID3 {
 		}
 	} // classify()
 
-	/*
-  *GOAL: classify the input example
-  *Input: example, decidion tree
-  *Output: class
-	* BASE CASE: leaf node reached
-  */
+	/**
+         * GOAL: classify the input example
+         * Input: example, decidion tree
+         * Output: class
+	 * BASE CASE: leaf node reached
+         **/
 	private int classify(String[] example, TreeNode tree){
 		int question = tree.value;
 		if(tree.children == null)return question;
@@ -133,15 +132,15 @@ class ID3 {
 		decisionTree = decisionTreeLearning(examples, new ArrayList<Integer>(), examples);
 	} // train()
 
-	/*
-  *GOAL: construct a decision tree based on the input example set
-  *Input: example list, questions asked already, parent example list
-  *Output: Decision tree
-	*BASE CASE:
-	*	A.	Example subset is empty
-	*	B.	Examples in subset have same class
-	*	C.	No attributes/questions left
-  */
+	/**
+	 * GOAL: construct a decision tree based on the input example set
+	 * Input: example list, questions asked already, parent example list
+	 * Output: Decision tree
+	 * BASE CASE:
+	 *	A.	Example subset is empty
+	 *	B.	Examples in subset have same class
+	 *	C.	No attributes/questions left
+         **/
 	private TreeNode decisionTreeLearning(ArrayList<String[]> examples,
 		ArrayList<Integer> questionsAsked, ArrayList<String[]> parentExamples){
 
@@ -166,58 +165,58 @@ class ID3 {
 		}
 
 	}
-	/*
-  *GOAL: For a subset of examples:
-	*      i) calculate information gain for each question
-	*      ii) return question with the highest information gain
-  *Input: questions already asked, subset of examples
-  *Output: index of question with the highest info gain
-  */
-	private int findBestQuestion(ArrayList<Integer> questionsAsked,
-															ArrayList<String[]> examples){
-			double maxInfoGain = Double.MIN_VALUE;
-			int maxGainIndex = 0;
-			for(int i = 0; i < attributes-1; i++){
-					if(questionsAsked.contains(i))continue;
-					int question = i;
-					//questionEntropy stores H(answer) for each answer of question i
-					Double [] questionEntropy = new Double[stringCount[question]];
-					//questionFrequencies stores size of each subset
-					int [] questionFrequencies = new int[stringCount[question]];
-					for(int j = 0; j < stringCount[question]; j++){
-							String splitValue = strings[question][j];
-							ArrayList<String[]> subset = split(examples, question, splitValue);
-							//get class frequencies for the subset
-							int [] classFrequencies = getClassFrequencies(subset);
-							int total = subset.size();
-							//calculate H(answer) for answer j to question i
-							questionEntropy[j] = calculateH(classFrequencies, total);
-							questionFrequencies[j] = total;
-					}
-					//calculate G(S,Q) for question i
-					double totalEntropyAfter = 0.0;
-					for(int q = 0; q < questionEntropy.length; q++){
-							double H = questionEntropy[q];
-							double weight = ((double)questionFrequencies[q]/(double)examples.size());
-							totalEntropyAfter = totalEntropyAfter + ( weight * H);
-					}
-					int [] classFreq = getClassFrequencies(examples);
-					double totalEntropyBefore = calculateH(classFreq, examples.size());
-					//calculate information gain for question i
-					double infoGain = totalEntropyBefore - totalEntropyAfter;
-					if(infoGain > maxInfoGain){
-						maxInfoGain = infoGain;
-						maxGainIndex = i;
-					}
+	
+	/**
+	 * GOAL: For a subset of examples:
+	 *      i) calculate information gain for each question
+	 *      ii) return question with the highest information gain
+	 * Input: questions already asked, subset of examples
+         * Output: index of question with the highest info gain
+  	 **/
+	private int findBestQuestion(ArrayList<Integer> questionsAsked, ArrayList<String[]> examples){
+		double maxInfoGain = Double.MIN_VALUE;
+		int maxGainIndex = 0;
+		for(int i = 0; i < attributes-1; i++){
+			if(questionsAsked.contains(i))continue;
+			int question = i;
+			//questionEntropy stores H(answer) for each answer of question i
+			Double [] questionEntropy = new Double[stringCount[question]];
+			//questionFrequencies stores size of each subset
+			int [] questionFrequencies = new int[stringCount[question]];
+			for(int j = 0; j < stringCount[question]; j++){
+				String splitValue = strings[question][j];
+				ArrayList<String[]> subset = split(examples, question, splitValue);
+				//get class frequencies for the subset
+				int [] classFrequencies = getClassFrequencies(subset);
+				int total = subset.size();
+				//calculate H(answer) for answer j to question i
+				questionEntropy[j] = calculateH(classFrequencies, total);
+				questionFrequencies[j] = total;
 			}
-			return maxGainIndex;
+			//calculate G(S,Q) for question i
+			double totalEntropyAfter = 0.0;
+			for(int q = 0; q < questionEntropy.length; q++){
+				double H = questionEntropy[q];
+				double weight = ((double)questionFrequencies[q]/(double)examples.size());
+				totalEntropyAfter = totalEntropyAfter + ( weight * H);
+			}
+			int [] classFreq = getClassFrequencies(examples);
+			double totalEntropyBefore = calculateH(classFreq, examples.size());
+			//calculate information gain for question i
+			double infoGain = totalEntropyBefore - totalEntropyAfter;
+			if(infoGain > maxInfoGain){
+				maxInfoGain = infoGain;
+				maxGainIndex = i;
+			}
+		}
+		return maxGainIndex;
 	}
-	/*
-  *GOAL: From an example set, get the examples that have a
-				 particular answer to a question
-  *Input: examples list, Q: question index, A: answer value
-  *Output: list of examples that have answer A to question Q.
-  */
+	
+       /**
+        * GOAL: From an example set, get the examples that have a particular answer to a question
+        * Input: examples list, Q: question index, A: answer value
+        * Output: list of examples that have answer A to question Q.
+	**/
 	private ArrayList<String[]> split(ArrayList<String[]> examples,
 																		int question, String splitValue){
 		ArrayList<String[]> subset = new ArrayList<String[]>();
@@ -228,11 +227,12 @@ class ID3 {
 		}
 		return subset;
 	}
-	/*
-  *GOAL: Calculate entropy for a given subset
-  *Input: class frequencies of the subset, size of the subset
-  *Output: entropy
-  */
+	
+	/**
+	 * GOAL: Calculate entropy for a given subset
+	 * Input: class frequencies of the subset, size of the subset
+	 * Output: entropy
+	 **/
 	private double calculateH(int [] classFrequencies, int total){
 		double H = 0.0;
 		for(int c = 0; c < classFrequencies.length; c++){
@@ -241,15 +241,15 @@ class ID3 {
 		}
 		return H;
 	}
-	/*
-  *GOAL: From a subset of examples get the frequency of each class
-  *Input: list of examples
-  *Output: array such that:
-					i) Each index corresponds to a class
-					ii) Each index stores the frequency of the indexed class
-					 		in the input example subset
-  */
-  private int [] getClassFrequencies(ArrayList<String[]> examples){
+	
+	/**
+         * GOAL: From a subset of examples get the frequency of each class
+         * Input: list of examples
+         * Output: array such that:
+	 *	i) Each index corresponds to a class
+	 *	ii) Each index stores the frequency of the indexed class in the input example subset
+         **/
+	 private int [] getClassFrequencies(ArrayList<String[]> examples){
 		//stringCount[attributes-1] --> number of classes in dataset
 		int [] classFrequencies = new int[stringCount[attributes-1]];
 		for(int i = 0; i < examples.size(); i++){
@@ -262,12 +262,13 @@ class ID3 {
 			}
 		}
 		return classFrequencies;
-	}
-	/*
-  *GOAL: Get the majority class of an example subset
-  *Input: list of examples
-  *Output: majority class index
-  */
+	 }
+	
+	/**
+         * GOAL: Get the majority class of an example subset
+         * Input: list of examples
+         * Output: majority class index
+         **/
 	private int plurality(ArrayList<String[]> examples){
 		int [] classFrequencies = getClassFrequencies(examples);
 		//find majority class
@@ -279,13 +280,13 @@ class ID3 {
 		return maxFreqindex;
 
 	}
-	/*
-	*GOAL: Check whether a subset of examples have all the
-				 same class.
-	*Input: list of examples
-	*Output: TRUE: All examples have the same class
-					 FALSE: Examples do not have tha same class
-	*/
+	
+        /**
+	 *  GOAL: Check whether a subset of examples have all the same class.
+	 *  Input: list of examples
+	 *  Output: i)  TRUE: All examples have the same class
+	 *          ii) FALSE: Examples do not have tha same class
+       	 **/
 	private boolean examplesHaveSameClass(ArrayList<String[]> examples){
 		String [] firstExample= examples.get(0);
 		String cl = firstExample[attributes-1];
@@ -299,11 +300,12 @@ class ID3 {
 		}
 		return sameClass;
 	}
-	/*
-	*GOAL: Get the class of a subset with same classes
-	*Input: examples list
-	*Output: index of class
-	*/
+	
+	/**
+	* GOAL: Get the class of a subset with same classes
+	* Input: examples list
+	* Output: index of class
+	**/
 	private int getClass(ArrayList<String[]> examples){
 		String [] example = examples.get(0);
 		String cl = example[attributes-1];
@@ -316,12 +318,13 @@ class ID3 {
 		}
 		return classIndex;
 	}
-	/*
-  *GOAL: Change underlying data structure storing the dataset
-				 from 2D array to dynamic ArrayList of String arrays.
-  *Input: 2D dataset
-  *Output: list of examples
-  */
+	
+	/**
+	 * GOAL: Change underlying data structure storing the dataset
+	 * from 2D array to dynamic ArrayList of String arrays.
+	 * Input: 2D dataset
+	 * Output: list of examples
+	 **/
 	static ArrayList<String[]> copy(String [][] data){
 		ArrayList<String[]> copy = new ArrayList<String[]>();
 		for(int i = 1; i < data.length; i++){
@@ -331,11 +334,12 @@ class ID3 {
 	}
 
 
-	/** Given a 2-dimensional array containing the training data, numbers each
-	 *  unique value that each attribute has, and stores these Strings in
-	 *  instance variables; for example, for attribute 2, its first value
-	 *  would be stored in strings[2][0], its second value in strings[2][1],
-	 *  and so on; and the number of different values in stringCount[2].
+	/** 
+	 * Given a 2-dimensional array containing the training data, numbers each
+	 * unique value that each attribute has, and stores these Strings in
+	 * instance variables; for example, for attribute 2, its first value
+	 * would be stored in strings[2][0], its second value in strings[2][1],
+	 * and so on; and the number of different values in stringCount[2].
 	 **/
 	void indexStrings(String[][] inputData) {
 		data = inputData;
@@ -356,8 +360,9 @@ class ID3 {
 		} // for each attribute
 	} // indexStrings()
 
-	/** For debugging: prints the list of attribute values for each attribute
-	 *  and their index values.
+	/** 
+	 * For debugging: prints the list of attribute values for each attribute
+	 * and their index values.
 	 **/
 	void printStrings() {
 		for (int attr = 0; attr < attributes; attr++)
@@ -366,9 +371,10 @@ class ID3 {
 									" = " + strings[attr][index]);
 	} // printStrings()
 
-	/** Reads a text file containing a fixed number of comma-separated values
-	 *  on each line, and returns a two dimensional array of these values,
-	 *  indexed by line number and position in line.
+	/** 
+	 * Reads a text file containing a fixed number of comma-separated values
+	 * on each line, and returns a two dimensional array of these values,
+	 * indexed by line number and position in line.
 	 **/
 	static String[][] parseCSV(String fileName)
 								throws FileNotFoundException, IOException {
